@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 from tkinter import ttk
 import random as rd
 import string
@@ -10,6 +11,44 @@ ConnectionStatus = False
 global DummyVar
 DummyVar = "\n"
 nickname = "FRANK"
+port = 1883
+
+
+def check_name(name):
+    if not name:
+        return FALSE
+    else:
+        return TRUE
+
+
+def set_nickname(new_name):
+    global nickname
+    if check_name(new_name) == FALSE:
+        messagebox.showerror("Error", "Invalid name")
+        pass
+    else:
+        Msgbox = messagebox.askquestion("Confirm",
+                                        "Are your sure to change your name from {} to {}".format(nickname, new_name))
+        if Msgbox == 'yes':
+            nickname = str(new_name)
+            messagebox.showinfo("Name changed", "Your name has been changed to {}".format(nickname))
+        else:
+            pass
+
+
+def user_setting():
+    USWin = Toplevel()
+    USWin.title("User Setting")
+    USWin.wm_minsize(250, 50)
+    USWin.resizable(0, 0)
+    USWin.grab_set()
+    USLabel = Label(USWin, text="Change name")
+    USLabel.grid(row=0, column=0)
+    global USEntry
+    USEntry = Entry(USWin)
+    USEntry.grid(row=0, column=1)
+    USOKButt = Button(USWin, text="Apply", command=lambda: set_nickname(USEntry.get()))
+    USOKButt.grid(row=1, column=1)
 
 
 def on_connection(client, user_data, flag, rc):
@@ -93,7 +132,7 @@ FileMenuBar.add_command(label="Exit", command=...)
 WindowMenu.add_cascade(label="File", menu=FileMenuBar)
 
 SettingMenuBar = Menu(WindowMenu, tearoff=0)
-SettingMenuBar.add_command(label="User Setting", command=...)
+SettingMenuBar.add_command(label="User Setting", command=user_setting)
 SettingMenuBar.add_command(label="Connection Setting", command=...)
 SettingMenuBar.add_command(label="Interface Setting", command=...)
 WindowMenu.add_cascade(label="Setting", menu=SettingMenuBar)
@@ -105,6 +144,6 @@ client = mqtt.Client(client_id)
 client.on_connect = on_connection
 client.on_message = on_message
 
-client.connect(hostname, 1883)
+client.connect(hostname, port)
 client.loop_start()
 window.mainloop()
